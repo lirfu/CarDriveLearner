@@ -8,6 +8,7 @@ import java.util.Random;
 
 import javax.swing.JPanel;
 
+import com.lirfu.cardrivelearner.graphics.Car;
 import com.lirfu.cardrivelearner.graphics.RoadSegment;
 
 public class RoadGenerator extends JPanel {
@@ -19,10 +20,11 @@ public class RoadGenerator extends JPanel {
 	private static Random random = new Random();
 	private static int y_step = 30;
 	private static int roadWidth = 200;
-	private static int turnAmount = 5;
+	private static int turnAmount = 7;
 
 	public RoadGenerator() {
 		roadCenterHistory = new LinkedList<>();
+		setBackground(Color.decode("0x00a000"));
 
 		calculator = new Runnable() {
 			@Override
@@ -44,14 +46,11 @@ public class RoadGenerator extends JPanel {
 			}
 		};
 
-		setBackground(Color.decode("0x00a000"));
 	}
 
 	@Override
 	public void paint(Graphics g) {
 		super.paint(g);
-		g.setColor(Color.decode("0x224488"));
-
 		synchronized (roadCenterHistory) {
 			maxPoints = getHeight() / y_step;
 
@@ -66,22 +65,33 @@ public class RoadGenerator extends JPanel {
 				y += y_step;
 				last = percent;
 			}
+
+			// To test the car showing.
+			new Car(new Point((getWidth() * last / 100) + roadWidth / 4, y - y_step), 0.2 * roadWidth).paint(g);
 		}
 	}
 
+	private int lastTurnDirection = 0;
+
 	public void nextStep() {
+		if (getWidth() == 0)
+			return;
+
 		int turn = random.nextInt(turnAmount); // Next turn amount.
-		turn *= random.nextInt(2) == 0 ? 1 : -1; // Next turn
-													// direction.
+		// Next turn direction.
+		turn = random.nextInt(2) == 0 ? 1 : -1;
+		if (lastTurnDirection == -turn)
+			turn = 0;
+		lastTurnDirection = turn;
 		roadCenterPercent += turn;
 
 		// Boundaries
-		if (roadCenterPercent > (100 - getWidth() / roadWidth))
-			roadCenterPercent = (100 - getWidth() / roadWidth);
-		if (roadCenterPercent < (getWidth() / roadWidth))
-			roadCenterPercent = (getWidth() / roadWidth);
+		if (roadCenterPercent > (100 * (1 - ((double) roadWidth) / 2 / getWidth())))
+			roadCenterPercent = (int) (100 * (1 - ((double) roadWidth) / 2 / getWidth()));
+		else if (roadCenterPercent < (((double) roadWidth) / 2 / getWidth() * 100))
+			roadCenterPercent = (int) (((double) roadWidth) / 2 / getWidth() * 100);
 
-		if (roadCenterHistory.size() > maxPoints + 1)
+		while (roadCenterHistory.size() > maxPoints)
 			roadCenterHistory.removeLast();
 
 		roadCenterHistory.addFirst(roadCenterPercent);
