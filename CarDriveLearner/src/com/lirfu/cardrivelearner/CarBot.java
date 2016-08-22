@@ -129,6 +129,11 @@ public class CarBot extends Canvas {
 		System.out.println(paused ? "Pause" : "Resume");
 	}
 
+	public void togglePause(boolean pause) {
+		paused = pause;
+		System.out.println(paused ? "Pause" : "Resume");
+	}
+
 	public enum Movement {
 		LEFT, RIGHT
 	}

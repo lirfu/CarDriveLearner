@@ -47,6 +47,7 @@ public class Main extends JFrame {
 				// Escape.
 				if (e.getKeyChar() == 0x001B) {
 					getGlassPane().setVisible(false);
+					car.togglePause(false);
 				}
 				// Control keys.
 				if (e.isControlDown())
@@ -58,6 +59,7 @@ public class Main extends JFrame {
 							System.exit(0);
 						}
 
+						car.togglePause(true);
 						getGlassPane().setVisible(true);
 						break;
 					case 0x0010:
