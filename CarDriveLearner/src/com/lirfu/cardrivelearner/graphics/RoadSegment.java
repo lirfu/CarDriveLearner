@@ -1,15 +1,18 @@
 package com.lirfu.cardrivelearner.graphics;
 
+import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
 
-import javax.swing.JPanel;
+import javafx.geometry.Point2D;
+import javafx.scene.shape.Line;
 
-public class RoadSegment extends JPanel {
+public class RoadSegment extends Canvas {
 	private Point start, end;
 
 	private int width, lineWidth;
+	private Color sideColor = Color.decode("0xcccc00");
 
 	public RoadSegment(Point start, Point end, int width, int lineWidth) {
 		this.width = width;
@@ -29,15 +32,40 @@ public class RoadSegment extends JPanel {
 		super.paint(g);
 		for (int i = -width / 2; i <= width / 2; i++) {
 			if (i < -(width / 2 - lineWidth) || i > (width / 2 - lineWidth))
-				g.setColor(Color.decode("0xcccc00"));
+				g.setColor(sideColor);
 			else
 				g.setColor(Color.decode("0x222222"));
 			g.drawLine(start.x + i, start.y, end.x + i, end.y);
 		}
-		for (int i = -width / 2; i <= width / 2; i++)
-			if (i > -lineWidth / 2 && i < lineWidth / 2) {
-				g.setColor(Color.decode("0xcccc00"));
-				g.drawLine(start.x + i, start.y + lineWidth / 2, end.x + i, end.y - lineWidth / 2);
-			}
+
+		// Middle line
+		// for (int i = -width / 2; i <= width / 2; i++)
+		// if (i > -lineWidth / 2 && i < lineWidth / 2) {
+		// g.setColor(Color.decode("0xffffff"));
+		// g.drawLine(start.x + i, start.y + lineWidth / 2, end.x + i, end.y -
+		// lineWidth / 2);
+		// }
+
+		// g.setColor(Color.decode("0x222222"));
+		// g.drawString(toString(), 0, start.y-10);
+	}
+
+	public RoadSegment setSideColor(Color color) {
+		this.sideColor = color;
+		return this;
+	}
+
+	public boolean isPointOnRoad(Point point) {
+		for (int i = -width / 2; i <= width / 2; i++) {
+			Line line = new Line(start.x + i, start.y, end.x + i, end.y);
+			if (line.contains(new Point2D(point.x, point.y)))
+				return true;
+		}
+		return false;
+	}
+
+	@Override
+	public String toString() {
+		return "RoadSegment: from (" + start.x + "," + start.y + ") to (" + end.x + "," + end.y + ")";
 	}
 }

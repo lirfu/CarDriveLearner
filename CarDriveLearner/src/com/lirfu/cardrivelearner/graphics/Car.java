@@ -1,18 +1,23 @@
 package com.lirfu.cardrivelearner.graphics;
 
+import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
+import java.util.LinkedList;
 
-import javax.swing.JPanel;
-
-public class Car extends JPanel {
+public class Car extends Canvas {
 	private Point position;
 	private int width;
 
-	public Car(Point position, double width) {
+	public Car(Point startingPosition, int width) {
+		this.position = startingPosition;
+		this.width = width;
+	}
+
+	public void paint(Graphics g, Point position) {
 		this.position = position;
-		this.width = (int) width;
+		this.paint(g);
 	}
 
 	@Override
@@ -24,5 +29,26 @@ public class Car extends JPanel {
 
 		g.setColor(Color.decode("0x2222cc"));
 		g.fillRect((int) (position.x - 0.4 * width), position.y - width / 2, (int) (0.8 * width), width);
+
+		// g.setColor(Color.decode("0xffffff"));
+		// for (Point p : getOccupationPoints())
+		// g.fillOval(p.x, p.y, 2, 2);
+	}
+
+	public boolean occupiesPoint(Point point) {
+		if (point.x >= position.x - width / 2 && point.x <= position.x + width / 2 && point.y >= position.y - width / 2 && point.y <= position.y + width / 2)
+			return true;
+		return false;
+	}
+
+	public LinkedList<Point> getOccupationPoints() {
+		LinkedList<Point> list = new LinkedList<>();
+		for (int x = position.x - width / 2; x <= position.x + width / 2; x++)
+			for (int y = position.y - width / 2; y <= position.y + width / 2; y++) {
+				Point pt = new Point(x, y);
+				if (occupiesPoint(pt))
+					list.add(pt);
+			}
+		return list;
 	}
 }
