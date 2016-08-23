@@ -6,6 +6,7 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.util.LinkedList;
 
+/** Graphic that represents a simple car. */
 public class Car extends Canvas {
 	private Point position;
 	private int width;
@@ -15,6 +16,7 @@ public class Car extends Canvas {
 		this.width = width;
 	}
 
+	/** Paints the graphic at the given coordinate. */
 	public void paint(Graphics g, Point position) {
 		this.position = position;
 		this.paint(g);
@@ -35,12 +37,20 @@ public class Car extends Canvas {
 		// g.fillOval(p.x, p.y, 2, 2);
 	}
 
+	/**
+	 * Tells if the given coordinate is on the actual graphic. <br>
+	 * Currently checks only a square of the graphic.
+	 */
 	public boolean occupiesPoint(Point point) {
 		if (point.x >= position.x - width / 2 && point.x <= position.x + width / 2 && point.y >= position.y - width / 2 && point.y <= position.y + width / 2)
 			return true;
 		return false;
 	}
 
+	/**
+	 * Returns a list of coordinates within this graphic.<br>
+	 * Currently checks only a square of the graphic.
+	 */
 	public LinkedList<Point> getOccupationPoints() {
 		LinkedList<Point> list = new LinkedList<>();
 		for (int x = position.x - width / 2; x <= position.x + width / 2; x++)

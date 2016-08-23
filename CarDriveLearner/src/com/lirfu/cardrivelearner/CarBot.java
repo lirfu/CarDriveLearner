@@ -8,10 +8,14 @@ import java.awt.Point;
 import com.lirfu.cardrivelearner.graphics.Car;
 import com.lirfu.cardrivelearner.graphics.Explosion;
 
+/**
+ * The heart of the game. Calls the road generator and updates score. Takes the
+ * input movement and reacts.
+ */
 public class CarBot extends Canvas {
 	private Point position;
 	private RoadGenerator road;
-	private Car vechicle;
+	private Car vehicle;
 	private int metersPassed = 0;
 	private int screenPositionPercent = 50;
 
@@ -25,7 +29,7 @@ public class CarBot extends Canvas {
 		this.road = road;
 		this.position = road.positionForVehicle();
 
-		this.vechicle = new Car(position, (int) width);
+		this.vehicle = new Car(position, (int) width);
 	}
 
 	@Override
@@ -37,15 +41,15 @@ public class CarBot extends Canvas {
 		if (exploded)
 			new Explosion(pos, 80).paint(g);
 		else {
-			vechicle.paint(g, pos);
+			vehicle.paint(g, pos);
 		}
 
 	}
 
+	/** Thread that acts as a clock and generates road segments as needed. */
 	private Thread thread = new Thread(new Runnable() {
 		@Override
 		public void run() {
-
 			// Initial delay.
 			synchronized (thread) {
 				try {
@@ -61,6 +65,7 @@ public class CarBot extends Canvas {
 					metersPassed++;
 					road.nextSegment();
 				}
+				// Destroyer.start();
 				road.repaint();
 
 				synchronized (thread) {
@@ -69,6 +74,7 @@ public class CarBot extends Canvas {
 						do {
 							thread.wait(delay < minThreadDelay ? minThreadDelay : delay);
 						} while (paused);
+						// Destroyer.join();
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
@@ -77,7 +83,7 @@ public class CarBot extends Canvas {
 			}
 		}
 	});
-
+	/** Thread that checks if the car is off road and needs to be destroyed. */
 	private Thread Destroyer = new Thread(new Runnable() {
 		@Override
 		public void run() {
@@ -95,17 +101,18 @@ public class CarBot extends Canvas {
 				// Destroy car.
 				if (road.vehicleOffRoad(CarBot.this))
 					demolish();
-				synchronized (Destroyer) {
-					try {
-						Destroyer.wait(10);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-				}
+				// synchronized (Destroyer) {
+				// try {
+				// Destroyer.wait(1);
+				// } catch (InterruptedException e) {
+				// e.printStackTrace();
+				// }
+				// }
 			}
 		}
 	});
 
+	/** Sets threads as daemons and starts them. */
 	public void start() {
 		if (thread.isAlive()) {
 			System.out.println("Bot is still alive.");
@@ -119,25 +126,30 @@ public class CarBot extends Canvas {
 		System.out.println("Start");
 	}
 
+	/** Stops the threads. */
 	public void stop() {
 		threadKill = true;
 		System.out.println("Stop");
 	}
 
+	/** Inverts the pause state of game. */
 	public void togglePause() {
 		paused = !paused;
 		System.out.println(paused ? "Pause" : "Resume");
 	}
 
+	/** Sets the pause value. */
 	public void togglePause(boolean pause) {
 		paused = pause;
 		System.out.println(paused ? "Pause" : "Resume");
 	}
 
+	/** Describes possible moves of the vehicle. */
 	public enum Movement {
 		LEFT, RIGHT
 	}
 
+	/** Perform a move on the car. Move amounts are automatically set. */
 	public void Move(Movement movement) {
 		if (paused || exploded)
 			return;
@@ -154,22 +166,25 @@ public class CarBot extends Canvas {
 		}
 
 		// Screen boundaries.
-		if (screenPositionPercent > (100 * (1 - ((double) vechicle.getWidth()) / 2 / getWidth()))) {
-			screenPositionPercent = (int) (100 * (1 - ((double) vechicle.getWidth()) / 2 / getWidth()));
-		} else if (screenPositionPercent < (((double) vechicle.getWidth()) / 2 / getWidth() * 100)) {
-			screenPositionPercent = (int) (((double) vechicle.getWidth()) / 2 / getWidth() * 100);
+		if (screenPositionPercent > (100 * (1 - ((double) vehicle.getWidth()) / 2 / getWidth()))) {
+			screenPositionPercent = (int) (100 * (1 - ((double) vehicle.getWidth()) / 2 / getWidth()));
+		} else if (screenPositionPercent < (((double) vehicle.getWidth()) / 2 / getWidth() * 100)) {
+			screenPositionPercent = (int) (((double) vehicle.getWidth()) / 2 / getWidth() * 100);
 		}
 
 		road.repaint();
 	}
 
+	/** Draws an explosion and stops all threads. */
 	public void demolish() {
+		System.out.println("Vechicle demolished.");
 		exploded = true;
 		road.repaint();
 		stop();
 	}
 
+	/** Returns the canvas of the vehicle. */
 	public Car getIcon() {
-		return vechicle;
+		return vehicle;
 	}
 }

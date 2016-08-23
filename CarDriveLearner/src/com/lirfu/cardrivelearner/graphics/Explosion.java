@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
 
+/** Graphic that represents an explosion. */
 public class Explosion extends Canvas {
 	private Point position;
 	private int width;

@@ -8,6 +8,10 @@ import java.awt.Point;
 import javafx.geometry.Point2D;
 import javafx.scene.shape.Line;
 
+/**
+ * Graphic of a road. It's designed to be concatenated vertically into a bending
+ * road.
+ */
 public class RoadSegment extends Canvas {
 	private Point start, end;
 
@@ -50,11 +54,13 @@ public class RoadSegment extends Canvas {
 		// g.drawString(toString(), 0, start.y-10);
 	}
 
+	/** Sets the color of the side lines of the road. */
 	public RoadSegment setSideColor(Color color) {
 		this.sideColor = color;
 		return this;
 	}
 
+	/** Tells if the given coordinate is on the graphic. */
 	public boolean isPointOnRoad(Point point) {
 		for (int i = -width / 2; i <= width / 2; i++) {
 			Line line = new Line(start.x + i, start.y, end.x + i, end.y);
