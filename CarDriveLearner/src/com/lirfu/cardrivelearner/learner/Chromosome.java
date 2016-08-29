@@ -1,35 +1,25 @@
 package com.lirfu.cardrivelearner.learner;
 
-import java.util.LinkedList;
-
-import com.lirfu.cardrivelearner.learner.Sensor.SensorData;
-
+/** Connects the trigger-response chain. */
 public class Chromosome {
-	private LinkedList<Instruction> instructions;
-	
-	public Chromosome() {
-		this.instructions = new LinkedList<Instruction>();
+	private Sensor sensor;
+	private Action action;
+
+	public Chromosome(Sensor sensor, Action action) {
+		this.sensor = sensor;
+		this.action = action;
 	}
-	
-	public void addInstruction(Sensor sensor, Action action) {
-		instructions.add(new Instruction(sensor, action));
+
+	public Sensor getSensor() {
+		return this.sensor;
 	}
-	
-	/** Attempts triggering sensors with given data. Once the first acountered sensor is triggered process ends and returns <code>true</code>. */
-	public boolean attemptTriggeringSensors(SensorData data) {
-		for (Instruction inst : instructions)
-			if (inst.sensor.isTriggered(data))
-				return true;
-		return false;
+
+	public Action getAction() {
+		return this.action;
 	}
-	
-	private class Instruction {
-		private Sensor sensor;
-		private Action action;
-		
-		protected Instruction(Sensor sensor, Action action) {
-			this.sensor = sensor;
-			this.action = action;
-		}
+
+	@Override
+	public boolean equals(Object obj) {
+		return ((Chromosome) obj).sensor.equals(sensor) && ((Chromosome) obj).action.equals(action);
 	}
 }

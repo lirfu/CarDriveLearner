@@ -2,6 +2,9 @@ package com.lirfu.cardrivelearner.learner;
 
 import com.lirfu.cardrivelearner.CarBot.Movement;
 
-public interface Action {
+public interface Action extends Mutatable {
 	public void perform(Movement move);
+
+	@Override
+	public void mutate();
 }
