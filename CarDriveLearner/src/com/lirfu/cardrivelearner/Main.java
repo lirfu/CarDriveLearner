@@ -91,12 +91,12 @@ public class Main extends JFrame {
 				case 'a':
 				case 'A':
 				case KeyEvent.VK_LEFT:
-					car.Move(Movement.LEFT);
+					car.perform(Movement.LEFT);
 					break;
 				case 'd':
 				case 'D':
 				case KeyEvent.VK_RIGHT:
-					car.Move(Movement.RIGHT);
+					car.perform(Movement.RIGHT);
 					break;
 				}
 			}
