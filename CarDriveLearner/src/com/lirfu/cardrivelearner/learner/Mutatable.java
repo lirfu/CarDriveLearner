@@ -4,7 +4,7 @@ import java.util.Random;
 
 public interface Mutatable {
 	/** Perform mutations to the object. */
-	public void mutate();
+	public void mutate(boolean force);
 
 	/**
 	 * Checks if the mutation will occur.

@@ -16,7 +16,7 @@ public class CarBot extends Canvas {
 	private Point position;
 	private RoadGenerator road;
 	private Car vehicle;
-	private int metersPassed = 0;
+	private int Score = 0;
 	private int screenPositionPercent = 50;
 
 	private boolean threadKill;
@@ -32,10 +32,14 @@ public class CarBot extends Canvas {
 		this.vehicle = new Car(position, (int) width);
 	}
 
+	public int getScore() {
+		return this.Score;
+	}
+
 	@Override
 	public void paint(Graphics g) {
 		g.setColor(Color.decode("0xffffff"));
-		g.drawString("Score: " + metersPassed + "m", 2, 12);
+		g.drawString("Score: " + Score + "m", 2, 12);
 
 		Point pos = new Point(road.getWidth() * screenPositionPercent / 100, position.y);
 		if (exploded)
@@ -62,14 +66,14 @@ public class CarBot extends Canvas {
 
 			while (!threadKill) {
 				synchronized (this) {
-					metersPassed++;
+					Score++;
 					road.nextSegment();
 					new Destroyer(getIcon()).start();
 					road.paintImmediately(road.getBounds());
 				}
 				synchronized (thread) {
 					try {
-						int delay = threadDelay - metersPassed;
+						int delay = threadDelay - Score;
 						do {
 							thread.wait(delay < minThreadDelay ? minThreadDelay : delay);
 						} while (paused);
@@ -100,6 +104,21 @@ public class CarBot extends Canvas {
 	public void stop() {
 		threadKill = true;
 		System.out.println("Stop");
+	}
+
+	public boolean isDestroyed() {
+		return this.exploded;
+	}
+
+	/** Halts current thread until car thread ends. */
+	public void joinThread() {
+		try {
+			synchronized (thread) {
+				thread.join();
+			}
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/** Inverts the pause state of game. */
