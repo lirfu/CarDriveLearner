@@ -1,4 +1,4 @@
-package com.lirfu.cardrivelearner;
+package com.lirfu.cardrivelearner.game;
 
 import java.awt.Canvas;
 import java.awt.Color;
@@ -13,6 +13,8 @@ import com.lirfu.cardrivelearner.graphics.Explosion;
  * input movement and reacts.
  */
 public class CarBot extends Canvas {
+	private static final long serialVersionUID = 3112659063733616160L;
+
 	private Point position;
 	private RoadGenerator road;
 	private Car vehicle;
@@ -190,7 +192,7 @@ public class CarBot extends Canvas {
 			if (!threadKill) {
 				// If car is off road
 				// Destroy car.
-				if (road.vehicleOffRoad(this.icon))
+				if (road.isVehicleOffRoad(this.icon))
 					demolish();
 			}
 		}

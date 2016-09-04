@@ -13,6 +13,8 @@ import javafx.scene.shape.Line;
  * road.
  */
 public class RoadSegment extends Canvas {
+	private static final long serialVersionUID = -3358766488458497946L;
+
 	private Point start, end;
 
 	private int width, lineWidth;

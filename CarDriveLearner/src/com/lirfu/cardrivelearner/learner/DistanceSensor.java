@@ -3,6 +3,8 @@ package com.lirfu.cardrivelearner.learner;
 import java.awt.Point;
 import java.util.Random;
 
+import com.lirfu.cardrivelearner.game.RoadGenerator;
+
 public class DistanceSensor implements Sensor {
 	private static final double MUTATION_PROBABILITY = 0.4;
 	private static final double ANGLE_MUTATION_PROBABILITY = 0.4;
@@ -33,15 +35,12 @@ public class DistanceSensor implements Sensor {
 
 	@Override
 	public boolean isTriggered(SensorData data) {
-		boolean trigger = false;
-
 		for (int x = position.x; x < position.x + triggerDistance * Math.cos(angle); x++)
-			for (int y = position.y; y < position.y + triggerDistance * Math.sin(angle); y++) {
-				Point p = new Point(x, y);
-				// TODO if(off road)
-				// t = true;
-			}
-		return trigger;
+			// If a point on sensors line of sight is off road, trigger sensor.
+			if (((RoadGenerator) data.getData()).isPointOffRoad(new Point(x, (int) (position.y + x * Math.tan(angle)))))
+				return true;
+
+		return false;
 	}
 
 	@Override

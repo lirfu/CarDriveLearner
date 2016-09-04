@@ -8,52 +8,52 @@ import java.util.LinkedList;
 
 /** Graphic that represents a simple car. */
 public class Car extends Canvas {
+	private static final long serialVersionUID = -4807278854322212054L;
+
 	private Point position;
 	private int width;
-	
+
 	public Car(Point startingPosition, int width) {
 		this.position = startingPosition;
 		this.width = width;
 	}
-	
+
 	public Car(Car car) {
 		this.position = car.position;
 		this.width = car.width;
 	}
-	
+
 	/** Paints the graphic at the given coordinate. */
 	public void paint(Graphics g, Point position) {
 		this.position = position;
 		this.paint(g);
 	}
-	
+
 	@Override
 	public void paint(Graphics g) {
 		super.paint(g);
 		g.setColor(Color.decode("0x0"));
 		g.fillOval(position.x - width / 2, position.y - width / 5, width, width / 3);
 		g.fillOval(position.x - width / 2, position.y + width / 5, width, width / 3);
-		
+
 		g.setColor(Color.decode("0x2222cc"));
-		g.fillRect((int) (position.x - 0.4 * width), position.y - width / 2, (int) (0.8 * width),
-				width);
-		
+		g.fillRect((int) (position.x - 0.4 * width), position.y - width / 2, (int) (0.8 * width), width);
+
 		// g.setColor(Color.decode("0xffffff"));
 		// for (Point p : getOccupationPoints())
 		// g.fillOval(p.x, p.y, 2, 2);
 	}
-	
+
 	/**
 	 * Tells if the given coordinate is on the actual graphic. <br>
 	 * Currently checks only a square of the graphic.
 	 */
 	public boolean occupiesPoint(Point point) {
-		if (point.x >= position.x - width / 2 && point.x <= position.x + width / 2
-				&& point.y >= position.y - width / 2 && point.y <= position.y + width / 2)
+		if (point.x >= position.x - width / 2 && point.x <= position.x + width / 2 && point.y >= position.y - width / 2 && point.y <= position.y + width / 2)
 			return true;
 		return false;
 	}
-	
+
 	/**
 	 * Returns a list of coordinates within this graphic.<br>
 	 * Currently checks only a square of the graphic.

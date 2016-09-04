@@ -16,6 +16,12 @@ public class Genome implements Mutatable, Evaluable, Comparable<Genome> {
 	private TreeSet<Chromosome> chromosomes;
 	private int HighScore = -1;
 
+	/** Creates an empty genome. */
+	private Genome() {
+		this.geneNumber = nextGeneNumber();
+		this.chromosomes = new TreeSet<Chromosome>();
+	}
+
 	/** Generates a new genome with a single chromosome. */
 	public Genome(Chromosome chromosome) {
 		this.geneNumber = nextGeneNumber();
@@ -23,31 +29,66 @@ public class Genome implements Mutatable, Evaluable, Comparable<Genome> {
 		addNewChromosome(chromosome);
 	}
 
-	/** Creates a new gene from the genes of two parents. */
-	public Genome(Genome parent1, Genome parent2) {
-		this.geneNumber = nextGeneNumber();
+	//	/**
+	//	 * Creates a new gene from the genomes of two parents. <br>
+	//	 * Finds a break point in both genomes and adds the first few of parent1 and
+	//	 * second few of parent2.
+	//	 */
+	//	public Genome(Genome parent1, Genome parent2) {
+	//		this.geneNumber = nextGeneNumber();
+	//		Random rand = new Random();
+	//		int cuttingPoint1 = rand.nextInt(parent1.chromosomes.size());
+	//		int cuttingPoint2 = rand.nextInt(parent2.chromosomes.size());
+	//
+	//		this.chromosomes = new TreeSet<Chromosome>();
+	//		// Add some of the first parents chromosomes.
+	//		for (int i = 0; i < cuttingPoint1; i++) {
+	//			addNewChromosome((Chromosome) parent1.chromosomes.toArray()[i]);
+	//		}
+	//		// Add some of the second parents chromosomes.
+	//		for (int i = cuttingPoint2; i < parent2.chromosomes.size(); i++) {
+	//			addNewChromosome((Chromosome) parent2.chromosomes.toArray()[i]);
+	//		}
+	//
+	//		// Remove some chromosomes to forbid overflow and because the less, the
+	//		// better.
+	//		for (int i = 0; i < rand.nextInt(this.chromosomes.size() - 1); i++)
+	//			chromosomes.remove(rand.nextInt(chromosomes.size()));
+	//	}
+
+	private int nextGeneNumber() {
+		return (int) geneNumberCounter++;
+	}
+
+	public static Genome[] producePairFrom(Genome parent1, Genome parent2) {
+		Genome child1 = new Genome(), child2 = new Genome();
+
 		Random rand = new Random();
 		int cuttingPoint1 = rand.nextInt(parent1.chromosomes.size());
 		int cuttingPoint2 = rand.nextInt(parent2.chromosomes.size());
 
-		this.chromosomes = new TreeSet<Chromosome>();
-		// Add some of the first parents chromosomes.
-		for (int i = 0; i < cuttingPoint1; i++) {
-			addNewChromosome((Chromosome) parent1.chromosomes.toArray()[i]);
+		// Add first chromosomes to child1, rest to child2.
+		for (int i = 0; i < parent1.chromosomes.size(); i++) {
+			if (i < cuttingPoint1)
+				child1.addNewChromosome((Chromosome) parent1.chromosomes.toArray()[i]);
+			else
+				child2.addNewChromosome((Chromosome) parent1.chromosomes.toArray()[i]);
 		}
-		// Add some of the second parents chromosomes.
-		for (int i = cuttingPoint2; i < parent2.chromosomes.size(); i++) {
-			addNewChromosome((Chromosome) parent2.chromosomes.toArray()[i]);
+		// Add first chromosomes to child2, rest to child1.
+		for (int i = 0; i < parent2.chromosomes.size(); i++) {
+			if (i < cuttingPoint2)
+				child2.addNewChromosome((Chromosome) parent2.chromosomes.toArray()[i]);
+			else
+				child1.addNewChromosome((Chromosome) parent2.chromosomes.toArray()[i]);
 		}
 
-		// Remove some chromosomes to forbid overflow and because the less, the
-		// better.
-		for (int i = 0; i < rand.nextInt(this.chromosomes.size() - 1); i++)
-			chromosomes.remove(rand.nextInt(chromosomes.size()));
-	}
+		// Remove some chromosomes to forbid overflow and because the less chromosomes, the better. Minimum 1 chromosome must be left.
+		for (int i = 0; i < rand.nextInt(child1.chromosomes.size() - 1); i++)
+			child1.chromosomes.remove(rand.nextInt(child1.chromosomes.size()));
+		for (int i = 0; i < rand.nextInt(child2.chromosomes.size() - 1); i++)
+			child2.chromosomes.remove(rand.nextInt(child2.chromosomes.size()));
 
-	private int nextGeneNumber() {
-		return (int) geneNumberCounter++;
+		return new Genome[] { child1, child2 };
 	}
 
 	/**

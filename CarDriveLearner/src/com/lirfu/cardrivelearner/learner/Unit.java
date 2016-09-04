@@ -1,6 +1,7 @@
 package com.lirfu.cardrivelearner.learner;
 
-import com.lirfu.cardrivelearner.Game;
+import com.lirfu.cardrivelearner.game.Game;
+import com.lirfu.cardrivelearner.learner.Sensor.SensorData;
 
 /** Connects the genome to the 'physical' game mechanism. */
 public class Unit {
@@ -24,6 +25,7 @@ public class Unit {
 		return this.genome;
 	}
 
+	/** Start the game and unit. */
 	public void start() {
 		mechanism.startGame();
 
@@ -44,10 +46,12 @@ public class Unit {
 		}
 	}
 
+	/** The units internal clock sends environment data to sensors. */
 	private Thread sensoringSystem = new Thread(new Runnable() {
 		@Override
 		public void run() {
-			while (!killSensoring) {
+			while (!killSensoring || !mechanism.isEnded()) {
+				genome.attemptTriggeringGene(new SensorData(mechanism.getRoad()));
 			}
 		}
 	});

@@ -1,4 +1,4 @@
-package com.lirfu.cardrivelearner;
+package com.lirfu.cardrivelearner.game;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -14,6 +14,8 @@ import com.lirfu.cardrivelearner.graphics.Car;
 import com.lirfu.cardrivelearner.graphics.RoadSegment;
 
 public class RoadGenerator extends JPanel {
+	private static final long serialVersionUID = -5431094871442664225L;
+
 	private Dimension size;
 	/** Current horizontal position of the road on the screen. */
 	private int roadCenterPercent = 50;
@@ -50,21 +52,43 @@ public class RoadGenerator extends JPanel {
 		setBackground(Color.decode("0x00a000"));
 	}
 
-	/*
-	 * private Thread thread = new Thread(new Runnable() {
-	 * 
-	 * @Override public void run() { // Starting straight. synchronized (this) {
-	 * synchronized (roadCenterHistory) { while (maxPoints == 0) { repaint();
-	 * calculateMaxPoints(); } for (int i = 0; i <= maxPoints + 1; i++)
-	 * roadCenterHistory.add(50); repaint(); } // Initial delay. synchronized
-	 * (thread) { try {
-	 * thread.wait(3 * threadDelay); } catch (InterruptedException e) {
-	 * e.printStackTrace(); } } } // Draw new random segments. while
-	 * (!threadKill) {
-	 * synchronized (this) { nextSegment(); repaint(); synchronized (thread) {
-	 * try { thread.wait(threadDelay); } catch (InterruptedException e) {
-	 * e.printStackTrace(); } } } } } });
-	 */
+	private Thread thread = new Thread(new Runnable() {
+		@Override
+		public void run() { // Starting straight.
+			synchronized (this) {
+				synchronized (roadCenterHistory) {
+					while (maxPoints == 0) {
+						repaint();
+						calculateMaxPoints();
+					}
+					for (int i = 0; i <= maxPoints + 1; i++)
+						roadCenterHistory.add(50);
+					repaint();
+				} // Initial delay.
+				synchronized (thread) {
+					try {
+						thread.wait(3 * threadDelay);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				} // Draw new random segments.
+				while (!threadKill) {
+					synchronized (this) {
+						nextSegment();
+						repaint();
+						synchronized (thread) {
+							try {
+								thread.wait(threadDelay);
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
+						}
+					}
+				}
+			}
+		}
+	});
+
 	@Override
 	public void paint(Graphics g) {
 		super.paint(g);
@@ -137,12 +161,20 @@ public class RoadGenerator extends JPanel {
 		}
 	}
 
-	/*
-	 * public void start() { if (thread.isAlive()) { System.out.println(
-	 * "Road generator is still alive!"); return; } threadKill = false;
-	 * thread.setDaemon(true);
-	 * thread.start(); } public void stop() { threadKill = true; }
-	 */
+	public void start() {
+		if (thread.isAlive()) {
+			System.out.println("Road generator is still alive!");
+			return;
+		}
+		threadKill = false;
+		thread.setDaemon(true);
+		thread.start();
+	}
+
+	public void stop() {
+		threadKill = true;
+	}
+
 	public int getRoadWidth() {
 		return roadWidth;
 	}
@@ -156,12 +188,12 @@ public class RoadGenerator extends JPanel {
 	}
 
 	private RoadSegment generateRoadSegment(int center1, int center2) {
-		return new RoadSegment(new Point(getWidth() * roadCenterHistory.get(center1) / 100, getHeight()),
-				new Point(getWidth() * roadCenterHistory.get(center2) / 100, getHeight() - y_step), roadWidth, roadLineWidth);
+		return new RoadSegment(new Point(getWidth() * roadCenterHistory.get(center1) / 100, getHeight()), new Point(getWidth() * roadCenterHistory.get(center2) / 100, getHeight() - y_step), roadWidth,
+				roadLineWidth);
 	}
 
 	/** Checks if vehicle is off road. */
-	public boolean vehicleOffRoad(Car icon) {
+	public boolean isVehicleOffRoad(Car icon) {
 		RoadSegment currentSegment = generateRoadSegment(getWidth() * roadCenterHistory.get(0) / 100, getWidth() * roadCenterHistory.get(1) / 100);
 		for (Point occupies : icon.getOccupationPoints())
 			if (!currentSegment.isPointOnRoad(occupies))
@@ -170,13 +202,9 @@ public class RoadGenerator extends JPanel {
 	}
 
 	/** Checks if point is off road. */
-	public boolean pointOffRoad(Point point) {
+	public boolean isPointOffRoad(Point point) {
 		// The lower index of the road segments center record.
-		int index = roadCenterHistory.size() - (getHeight() - point.y) / y_step; // TODO
-																					// Is
-																					// this
-																					// even
-																					// correct???
+		int index = roadCenterHistory.size() - (getHeight() - point.y) / y_step; // TODO Is this even correct???
 		RoadSegment currentSegment = generateRoadSegment(getWidth() * roadCenterHistory.get(index) / 100, getWidth() * roadCenterHistory.get(index + 1) / 100);
 		return !currentSegment.isPointOnRoad(point);
 	}

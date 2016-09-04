@@ -1,25 +1,28 @@
-package com.lirfu.cardrivelearner;
+package com.lirfu.cardrivelearner.game;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.TextArea;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 import javax.swing.JFrame;
 
-import com.lirfu.cardrivelearner.CarBot.Movement;
+import com.lirfu.cardrivelearner.game.CarBot.Movement;
 
 public class Game extends JFrame {
-	private RoadGenerator road;
-	public CarBot car;
+	private static final long serialVersionUID = -8921201870671481609L;
 
-	public Game(int width, int height, boolean isUserPlayer) {
+	private RoadGenerator road;
+	private CarBot car;
+
+	public Game(Dimension size, boolean isUserPlayer) {
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setVisible(true);
 		setResizable(false);
-		setSize(width, height);
+		setSize(size);
 
 		setGlassPane(GlassPane());
 
@@ -27,8 +30,8 @@ public class Game extends JFrame {
 			initKeyboard();
 
 		int delay = 200;
-		road = new RoadGenerator(width / 5, delay, getSize());
-		car = new CarBot(width / 15, road);
+		road = new RoadGenerator(size.width / 5, delay, getSize());
+		car = new CarBot(size.width / 15, road);
 
 		road.add(car);
 		add(road);
@@ -40,7 +43,8 @@ public class Game extends JFrame {
 		return this.car.getScore();
 	}
 
-	public boolean hasEnded() {
+	/** Checks if the game has ended. */
+	public boolean isEnded() {
 		return car.isDestroyed();
 	}
 
@@ -61,6 +65,14 @@ public class Game extends JFrame {
 		removeAll();
 		car.stop();
 		startGame();
+	}
+
+	public CarBot getVehicle() {
+		return this.car;
+	}
+
+	public RoadGenerator getRoad() {
+		return this.road;
 	}
 
 	/** Adds the keyboard listeners for the game controls. */

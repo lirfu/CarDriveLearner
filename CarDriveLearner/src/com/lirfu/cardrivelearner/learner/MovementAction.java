@@ -1,8 +1,12 @@
 package com.lirfu.cardrivelearner.learner;
 
-import com.lirfu.cardrivelearner.CarBot.Movement;
+import java.util.Random;
+
+import com.lirfu.cardrivelearner.game.CarBot.Movement;
 
 public class MovementAction implements Action {
+	private static final double MUTATION_PROBABILITY = 0.1;
+
 	private Movement move;
 
 	public MovementAction(Movement move) {
@@ -15,12 +19,16 @@ public class MovementAction implements Action {
 
 	@Override
 	public void mutate(boolean force) {
-		// TODO Auto-generated method stub
+		if (force || Mutatable.willMutate(MUTATION_PROBABILITY))
+			this.move = getRandomMovement();
 	}
 
+	/** TODO Auto-generated method stub */
 	@Override
 	public void perform(Movement move) {
-		// TODO Auto-generated method stub
+	}
 
+	public static Movement getRandomMovement() {
+		return Movement.values()[new Random().nextInt(Movement.values().length)];
 	}
 }

@@ -7,6 +7,8 @@ import java.awt.Point;
 
 /** Graphic that represents an explosion. */
 public class Explosion extends Canvas {
+	private static final long serialVersionUID = 5288419370984918216L;
+
 	private Point position;
 	private int width;
 

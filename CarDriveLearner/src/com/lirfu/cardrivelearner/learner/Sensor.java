@@ -7,6 +7,14 @@ public interface Sensor extends Mutatable, Evaluable {
 
 	/** Data that sensors can process. */
 	public class SensorData {
+		private Object data;
 
+		public SensorData(Object data) {
+			this.data = data;
+		}
+
+		public Object getData() {
+			return this.data;
+		}
 	}
 }
